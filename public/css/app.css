@@ -124,6 +124,21 @@ th { color: var(--muted); font-weight: 500; }
 .inline-form { display: inline; }
 .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
+/* ===== Страница входа ===== */
+.auth-wrap {
+    max-width: 380px; margin: 60px auto; padding: 0 20px;
+}
+.auth-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 28px 24px;
+}
+.auth-card h1 { font-size: 20px; margin: 0 0 4px; }
+.auth-card .btn { width: 100%; margin-top: 18px; }
+.auth-logo { text-align: center; margin-bottom: 18px; }
+.auth-logo .brand-text { font-weight: 600; font-size: 18px; color: var(--text); }
+.checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; }
+.checkbox-row input { width: auto; }
+
 /* ===== Адаптивность ===== */
 @media (max-width: 600px) {
     .wrap { padding: 0 14px; }
