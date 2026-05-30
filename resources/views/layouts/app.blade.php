@@ -7,6 +7,12 @@
     <title>@yield('title', 'Очередь на сдачу лабораторных')</title>
     <link rel="stylesheet" href="{{ asset('css/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script>
+        // Применяем тему как можно раньше, чтобы не было вспышки светлого фона.
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -18,6 +24,7 @@
                 <span class="brand-text">Очередь на сдачу лаб</span>
             </a>
             <nav>
+                <button type="button" id="theme-toggle" class="theme-toggle" title="Сменить тему" aria-label="Сменить тему">🌙</button>
                 @auth
                     <a href="{{ route('admin.subjects.index') }}">Панель старосты</a>
                 @else
@@ -39,5 +46,31 @@
             @yield('content')
         </div>
     </main>
+    <script>
+        // Переключение тёмной/светлой темы с запоминанием выбора.
+        (function () {
+            const root = document.documentElement;
+            const btn = document.getElementById('theme-toggle');
+
+            function apply(theme) {
+                if (theme === 'dark') {
+                    root.setAttribute('data-theme', 'dark');
+                    btn.textContent = '☀️';
+                } else {
+                    root.removeAttribute('data-theme');
+                    btn.textContent = '🌙';
+                }
+            }
+
+            // Восстанавливаем сохранённую тему при загрузке.
+            apply(localStorage.getItem('theme') || 'light');
+
+            btn.addEventListener('click', function () {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', next);
+                apply(next);
+            });
+        })();
+    </script>
 </body>
 </html>

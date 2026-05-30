@@ -31,7 +31,7 @@
             <input type="text" id="student_name" name="student_name" value="{{ old('student_name') }}" required>
 
             <label for="lab_titles">Названия лабораторных работ (каждая с новой строки)</label>
-            <textarea id="lab_titles" name="lab_titles" placeholder="Лабораторная 1: Установка окружения&#10;Лабораторная 2: Маршрутизация" required>{{ old('lab_titles') }}</textarea>
+            <textarea id="lab_titles" name="lab_titles" required>{{ old('lab_titles') }}</textarea>
 
             <label for="labs_to_pass">Сколько работ хотите защитить</label>
             <input type="number" id="labs_to_pass" name="labs_to_pass" min="1" max="100" value="{{ old('labs_to_pass', 1) }}" required>
