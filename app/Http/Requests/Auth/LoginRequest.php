@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,13 +29,21 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            // Код входа старосты: ровно 4 цифры.
+            'code' => ['required', 'string', 'regex:/^\d{4}$/'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'code.required' => 'Введите код из 4 цифр.',
+            'code.regex'    => 'Код должен состоять из 4 цифр.',
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Проверить код и авторизовать старосту.
      *
      * @throws ValidationException
      */
@@ -42,13 +51,27 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $expected = (string) config('auth.admin_code');
+
+        // Сравнение в постоянном времени, чтобы исключить тайминг-атаки.
+        if (! hash_equals($expected, (string) $this->input('code'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'code' => 'Неверный код.',
             ]);
         }
+
+        // Код верный — логиним учётную запись старосты.
+        $user = User::query()->oldest('id')->first();
+
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'code' => 'Учётная запись старосты не настроена. Запустите сидер базы данных.',
+            ]);
+        }
+
+        Auth::login($user, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -69,7 +92,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'code' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -81,6 +104,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate('login|'.$this->ip());
     }
 }

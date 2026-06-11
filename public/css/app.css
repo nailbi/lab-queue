@@ -1,151 +1,342 @@
-/* ===== Переменные темы ===== */
+/* ============================================================
+   Paper — «документы на столе»: белые листы с жёсткими тенями,
+   чёрные акценты, зелёный статус «на сдаче».
+   ============================================================ */
+
+/* ===== Переменные темы (светлая по умолчанию) ===== */
 :root {
-    --bg:#f4f5f7; --card:#fff; --line:#e2e5ea;
-    --text:#1f2430; --muted:#6b7280;
-    --accent:#3b5bdb; --accent-d:#2f49b0;
-    --ok:#2f9e44; --warn:#e8590c; --danger:#e03131;
-    --chip:#eef0f4;
+    --bg:#f0efeb;            /* стол */
+    --card:#ffffff;          /* лист бумаги */
+    --line:#d9d7d2;          /* рамка листа */
+    --shadow:#d9d7d2;        /* жёсткая тень листа */
+    --input-line:#b9b7b2;
+    --text:#111111;
+    --muted:#8a8a86;
+    --accent:#111111;        /* акцент — чёрный */
+    --accent-contrast:#ffffff;
+    --ok:#15803d;  --ok-bg:#e4f3e6;        /* зелёный «на сдаче» / «сдал» */
+    --danger:#dc2626; --danger-bg:#fdecec; /* красный «не явился» */
+    --chip:#f5f5f3; --chip-text:#6b6b67;   /* серый «ожидает» */
+
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --font-display: "Montserrat", "Arial Black", sans-serif;
+    --font-body: "Roboto", system-ui, sans-serif;
 }
 
-/* ===== Тёмная тема ===== */
+/* ===== Тёмная тема — системная ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg:#191815; --card:#242320; --line:#3a3833; --shadow:#100f0d;
+        --input-line:#4a4842;
+        --text:#e9e7e2; --muted:#9b978e;
+        --accent:#e9e7e2; --accent-contrast:#191815;
+        --ok:#5cc97c; --ok-bg:#1d2f22;
+        --danger:#f07171; --danger-bg:#33201f;
+        --chip:#2e2d29; --chip-text:#a3a099;
+    }
+}
+
+/* ===== Ручное переключение (перебивает системную тему) ===== */
 [data-theme="dark"] {
-    --bg:#15171c; --card:#1e2128; --line:#2c313a;
-    --text:#e6e8ec; --muted:#9aa3b2;
-    --accent:#5c7cfa; --accent-d:#4263eb;
-    --ok:#51cf66; --warn:#ff922b; --danger:#ff6b6b;
-    --chip:#2c313a;
+    --bg:#191815; --card:#242320; --line:#3a3833; --shadow:#100f0d;
+    --input-line:#4a4842;
+    --text:#e9e7e2; --muted:#9b978e;
+    --accent:#e9e7e2; --accent-contrast:#191815;
+    --ok:#5cc97c; --ok-bg:#1d2f22;
+    --danger:#f07171; --danger-bg:#33201f;
+    --chip:#2e2d29; --chip-text:#a3a099;
 }
-
-/* Кнопка переключения темы */
-.theme-toggle {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px; border: 1px solid var(--line);
-    border-radius: 8px; background: var(--card); color: var(--text);
-    cursor: pointer; font-size: 18px; line-height: 1; padding: 0;
+[data-theme="light"] {
+    --bg:#f0efeb; --card:#ffffff; --line:#d9d7d2; --shadow:#d9d7d2;
+    --input-line:#b9b7b2;
+    --text:#111111; --muted:#8a8a86;
+    --accent:#111111; --accent-contrast:#ffffff;
+    --ok:#15803d; --ok-bg:#e4f3e6;
+    --danger:#dc2626; --danger-bg:#fdecec;
+    --chip:#f5f5f3; --chip-text:#6b6b67;
 }
-.theme-toggle:hover { border-color: var(--accent); }
-nav { display: flex; align-items: center; gap: 14px; }
 
 /* ===== Базовое ===== */
 * { box-sizing: border-box; }
 body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-body);
     background: var(--bg); color: var(--text); line-height: 1.5;
 }
 body, .card, .btn, input, textarea, .theme-toggle, .badge {
     transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--text); }
+a:hover { opacity: .7; }
+a.btn, a.brand, a.card-link { border-bottom: none; }
 
-/* ===== Шапка и логотип ===== */
-header { background: var(--card); border-bottom: 1px solid var(--line); }
+/* ===== Шапка — отдельный «лист» ===== */
+header { background: transparent; padding-top: 18px; }
 .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
 header .wrap {
     display: flex; align-items: center; justify-content: space-between;
-    min-height: 64px; gap: 12px; flex-wrap: wrap;
+    min-height: 60px; gap: 12px; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--line); border-radius: 3px;
+    box-shadow: 3px 3px 0 var(--shadow);
+    padding: 10px 18px;
 }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--text); }
-.brand:hover { text-decoration: none; }
-.brand img { height: 40px; width: auto; display: block; }
-.brand .brand-text { font-weight: 600; font-size: 18px; line-height: 1.2; }
+.brand img { height: 36px; width: auto; display: block; }
+.brand .brand-text {
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    text-transform: uppercase; letter-spacing: .4px; line-height: 1.2;
+}
+nav { display: flex; align-items: center; gap: 14px; }
+nav a { font-size: 14px; }
+
+/* Кнопка переключения темы */
+.theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border: 1px solid var(--line);
+    border-radius: 3px; background: var(--card); color: var(--text);
+    cursor: pointer; font-size: 17px; line-height: 1; padding: 0;
+    transition: transform 160ms var(--ease-out), border-color .2s ease;
+}
+.theme-toggle:hover { border-color: var(--text); }
+.theme-toggle:active { transform: scale(0.94); }
 
 /* ===== Контент ===== */
-main { padding: 28px 0 60px; }
-h1 { font-size: 24px; margin: 0 0 4px; }
-h2 { font-size: 18px; margin: 24px 0 12px; }
-.sub { color: var(--muted); margin: 0 0 20px; }
+main { padding: 26px 0 60px; }
+h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 23px; margin: 0 0 4px;
+}
+/* Чёрная черта-«штамп» под заголовком страницы */
+h1::after {
+    content: ""; display: block; width: 48px; height: 3px;
+    background: var(--accent); margin-top: 8px;
+}
+h2 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 14px; text-transform: uppercase; letter-spacing: .6px;
+    margin: 24px 0 12px;
+}
+.sub { color: var(--muted); margin: 6px 0 22px; }
 
+/* ===== Карточки-«листы» ===== */
 .card {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; padding: 18px 20px; margin-bottom: 16px;
+    border-radius: 3px; padding: 18px 20px; margin-bottom: 16px;
+    box-shadow: 3px 3px 0 var(--shadow);
 }
-.card-link { display: block; transition: border-color .15s; }
-.card-link:hover { border-color: var(--accent); text-decoration: none; }
+.card-link {
+    display: block;
+    transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+.card-link:hover {
+    text-decoration: none;
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--shadow);
+}
+.card-link:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--shadow); }
 
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-/* ===== Бейджи статусов ===== */
+/* ===== Бейджи статусов — «штампы» ===== */
 .badge {
-    display: inline-block; font-size: 13px; padding: 2px 10px;
-    border-radius: 20px; background: var(--chip); color: var(--muted);
+    display: inline-block; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: 3px 10px; border-radius: 2px;
+    background: var(--chip); color: var(--chip-text);
 }
-.badge.ok { background: rgba(47,158,68,.15); color: var(--ok); }
-.badge.present { background: rgba(232,89,12,.15); color: var(--warn); }
-.badge.absent { background: rgba(224,49,49,.15); color: var(--danger); }
+.badge.ok { background: var(--ok); color: #fff; }            /* сдал */
+.badge.present { background: var(--ok-bg); color: var(--ok); } /* на сдаче — зелёный */
+.badge.absent { background: var(--danger-bg); color: var(--danger); }
 
 /* ===== Формы ===== */
-label { display: block; font-size: 14px; font-weight: 500; margin: 12px 0 4px; }
+label { display: block; font-size: 13px; font-weight: 500; margin: 12px 0 5px; }
 input[type=text], input[type=number], input[type=email], input[type=password], textarea {
-    width: 100%; padding: 9px 11px; border: 1px solid var(--line);
-    border-radius: 8px; font: inherit; background: var(--card); color: var(--text);
+    width: 100%; padding: 9px 12px; border: 1px solid var(--input-line);
+    border-radius: 2px; font: inherit; background: var(--card); color: var(--text);
+    transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+input:focus, textarea:focus {
+    outline: none; border-color: var(--text);
+    box-shadow: 2px 2px 0 var(--shadow);
 }
 textarea { resize: vertical; min-height: 80px; }
 
-/* ===== Кнопки ===== */
+/* ===== Кнопки — чёрные «печати» ===== */
 .btn {
-    display: inline-block; border: 0; border-radius: 8px; padding: 9px 16px;
-    font: inherit; font-weight: 500; cursor: pointer;
-    background: var(--accent); color: #fff;
+    display: inline-block; border: 1px solid var(--accent); border-radius: 2px;
+    padding: 9px 18px; font: inherit; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px; cursor: pointer;
+    background: var(--accent); color: var(--accent-contrast);
+    box-shadow: 3px 3px 0 var(--shadow);
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), opacity .2s ease;
 }
-.btn:hover { background: var(--accent-d); text-decoration: none; }
-.btn.sm { padding: 5px 10px; font-size: 13px; }
-.btn.ghost { background: var(--chip); color: var(--text); }
-.btn.danger { background: var(--danger); }
-.btn.ok { background: var(--ok); }
-.btn.warn { background: var(--warn); }
+.btn:hover { opacity: .88; text-decoration: none; }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
+.btn.sm { padding: 5px 11px; font-size: 11px; box-shadow: 2px 2px 0 var(--shadow); }
+.btn.sm:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--shadow); }
+.btn.ghost {
+    background: var(--card); color: var(--text); border-color: var(--line);
+}
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn.warn { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
 
 /* ===== Таблицы ===== */
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td {
-    text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line);
+    text-align: left; padding: 10px 8px; border-bottom: 1px dashed var(--line);
     font-size: 14px; vertical-align: top;
 }
-th { color: var(--muted); font-weight: 500; }
-.pos {
-    display: inline-flex; width: 26px; height: 26px; align-items: center;
-    justify-content: center; border-radius: 50%; background: var(--chip);
-    font-weight: 600; font-size: 13px;
+tr:last-child td { border-bottom: none; }
+th {
+    color: var(--muted); font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .5px;
+    border-bottom: 1px solid var(--line);
 }
+/* Номер в очереди — квадратный «штамп» */
+.pos {
+    display: inline-flex; width: 25px; height: 25px; align-items: center;
+    justify-content: center; border: 1px solid var(--text); border-radius: 2px;
+    background: var(--card); color: var(--text);
+    font-weight: 700; font-size: 12px;
+}
+/* Первый в очереди — чёрный штамп */
+tr:first-child .pos { background: var(--accent); color: var(--accent-contrast); }
 
 /* ===== Уведомления ===== */
 .alert {
-    background: rgba(47,158,68,.15); border: 1px solid rgba(47,158,68,.4); color: var(--ok);
-    padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;
+    background: var(--ok-bg); border: 1px solid var(--ok); color: var(--ok);
+    padding: 10px 14px; border-radius: 2px; margin-bottom: 16px;
+    box-shadow: 3px 3px 0 var(--shadow);
 }
 .errors {
-    background: rgba(224,49,49,.12); border: 1px solid rgba(224,49,49,.4); color: var(--danger);
-    padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;
+    background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger);
+    padding: 10px 14px; border-radius: 2px; margin-bottom: 16px;
+    box-shadow: 3px 3px 0 var(--shadow);
 }
 .errors ul { margin: 0; padding-left: 18px; }
 
 .muted { color: var(--muted); font-size: 13px; }
+.muted a { border-bottom-color: var(--muted); color: var(--muted); }
 .inline-form { display: inline; }
 .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
 /* ===== Страница входа ===== */
-.auth-wrap {
-    max-width: 380px; margin: 60px auto; padding: 0 20px;
-}
+.auth-wrap { max-width: 400px; margin: 60px auto; padding: 0 20px; }
 .auth-card {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; padding: 28px 24px;
+    border-radius: 3px; padding: 28px 24px;
+    box-shadow: 4px 4px 0 var(--shadow);
 }
-.auth-card h1 { font-size: 20px; margin: 0 0 4px; }
+.auth-card h1 { font-size: 19px; margin: 0 0 4px; }
 .auth-card .btn { width: 100%; margin-top: 18px; }
 .auth-logo { text-align: center; margin-bottom: 18px; }
-.auth-logo .brand-text { font-weight: 600; font-size: 18px; color: var(--text); }
+.auth-logo .brand-text {
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    text-transform: uppercase; letter-spacing: .4px; color: var(--text);
+}
+.auth-logo a { border-bottom: none; }
 .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; }
 .checkbox-row input { width: auto; }
+
+/* ===== Ввод кода (OTP) ===== */
+.otp { display: flex; gap: 12px; justify-content: center; margin: 8px 0 4px; position: relative; }
+.otp-input {
+    width: 60px; height: 72px; padding: 0;
+    text-align: center; font-size: 28px; font-weight: 700;
+    color: var(--text); background: var(--card);
+    border: 1px solid var(--input-line); border-radius: 3px;
+    caret-color: var(--text);
+    transition: border-color 160ms var(--ease-out),
+                box-shadow 160ms var(--ease-out),
+                transform 160ms var(--ease-out),
+                background-color .2s ease;
+}
+.otp-input:hover { border-color: var(--text); }
+.otp-input:focus {
+    outline: none; border-color: var(--text);
+    box-shadow: 3px 3px 0 var(--shadow);
+}
+.otp-input:active { transform: scale(0.97); }
+
+/* ===== Успех: цифры сливаются в квадрат с галочкой ===== */
+.otp-success {
+    position: absolute; top: 0; left: 50%;
+    width: 60px; height: 72px;
+    transform: translateX(-50%) scale(0.6);
+    opacity: 0; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--ok); border-radius: 3px;
+    background: var(--ok-bg); color: var(--ok);
+    box-shadow: 3px 3px 0 var(--shadow);
+    transition: transform 350ms var(--ease-out) 280ms, opacity 250ms ease 280ms;
+}
+/* Цифры стягиваются к центру и тают. */
+.otp.otp-merge .otp-input {
+    pointer-events: none;
+    transition: transform 400ms cubic-bezier(0.77, 0, 0.175, 1),
+                opacity 300ms ease 100ms;
+    opacity: 0;
+}
+.otp.otp-merge .otp-input:nth-of-type(1) { transform: translateX(108px) scale(0.7); }
+.otp.otp-merge .otp-input:nth-of-type(2) { transform: translateX(36px) scale(0.7); }
+.otp.otp-merge .otp-input:nth-of-type(3) { transform: translateX(-36px) scale(0.7); }
+.otp.otp-merge .otp-input:nth-of-type(4) { transform: translateX(-108px) scale(0.7); }
+/* Квадрат с галочкой раскрывается на их месте. */
+.otp.otp-merge .otp-success { transform: translateX(-50%) scale(1); opacity: 1; }
+/* Галочка подпрыгивает чуть позже квадрата. */
+.otp.otp-merge .otp-success svg {
+    animation: otp-check-pop 350ms var(--ease-out) 420ms both;
+}
+@keyframes otp-check-pop {
+    0% { transform: scale(0.4); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Анимация ошибки: короткое покачивание + красные рамки. */
+.otp.otp-error { animation: otp-shake 320ms var(--ease-out); }
+.otp.otp-error .otp-input {
+    border-color: var(--danger);
+    box-shadow: 3px 3px 0 var(--danger-bg);
+}
+@keyframes otp-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+}
 
 /* ===== Адаптивность ===== */
 @media (max-width: 600px) {
     .wrap { padding: 0 14px; }
-    h1 { font-size: 21px; }
-    .brand .brand-text { font-size: 16px; }
-    .brand img { height: 34px; }
+    h1 { font-size: 20px; }
+    .brand .brand-text { font-size: 13px; }
+    .brand img { height: 30px; }
     .card { padding: 14px 16px; }
     th, td { padding: 8px 6px; font-size: 13px; }
     .btn { padding: 8px 14px; }
+    .otp { gap: 9px; }
+    .otp-input { width: 54px; height: 64px; font-size: 24px; }
+    .otp-success { width: 54px; height: 64px; }
+    .otp.otp-merge .otp-input:nth-of-type(1) { transform: translateX(94px) scale(0.7); }
+    .otp.otp-merge .otp-input:nth-of-type(2) { transform: translateX(31px) scale(0.7); }
+    .otp.otp-merge .otp-input:nth-of-type(3) { transform: translateX(-31px) scale(0.7); }
+    .otp.otp-merge .otp-input:nth-of-type(4) { transform: translateX(-94px) scale(0.7); }
+}
+
+/* ===== Меньше движения ===== */
+@media (prefers-reduced-motion: reduce) {
+    .otp.otp-error { animation: none; }
+    .otp-input, .btn, .card-link, .theme-toggle {
+        transition: border-color 160ms ease, box-shadow 160ms ease,
+                    background-color .2s ease, color .2s ease;
+    }
+    .otp-input:active, .btn:active, .card-link:hover, .theme-toggle:active { transform: none; }
+    /* Успех без движения: цифры просто тают, галочка появляется на месте. */
+    .otp.otp-merge .otp-input { transform: none; transition: opacity 200ms ease; }
+    .otp-success { transition: opacity 200ms ease 150ms; transform: translateX(-50%); }
+    .otp.otp-merge .otp-success { transform: translateX(-50%); }
+    .otp.otp-merge .otp-success svg { animation: none; }
 }

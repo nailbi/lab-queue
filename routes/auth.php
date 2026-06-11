@@ -22,6 +22,10 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
+    // AJAX-проверка кода для анимации успеха на странице входа.
+    Route::post('login/check', [AuthenticatedSessionController::class, 'check'])
+        ->name('login.check');
+
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
