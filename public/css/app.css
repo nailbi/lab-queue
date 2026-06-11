@@ -180,6 +180,53 @@ textarea { resize: vertical; min-height: 80px; }
 .btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
 .btn.warn { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
 
+/* ===== Кнопки лабораторных — «талоны» ===== */
+.lab-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.lab-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--input-line); border-radius: 2px;
+    padding: 7px 14px; margin: 0;
+    background: var(--card); color: var(--text);
+    font-size: 13px; font-weight: 500; cursor: pointer; user-select: none;
+    box-shadow: 2px 2px 0 var(--shadow);
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out),
+                background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.lab-chip:hover { border-color: var(--text); }
+.lab-chip:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--shadow); }
+/* Сам чекбокс спрятан — выбор показываем заливкой «печати». */
+.lab-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.lab-chip:has(input:checked) {
+    background: var(--accent); color: var(--accent-contrast); border-color: var(--accent);
+}
+.lab-chip:has(input:focus-visible) { outline: 2px solid var(--text); outline-offset: 2px; }
+.lab-hint { margin: 8px 0 0; }
+
+/* Чип в панели старосты: не кликается целиком, есть крестик удаления. */
+.lab-chip.static { cursor: default; }
+.lab-chip.static:active { transform: none; box-shadow: 2px 2px 0 var(--shadow); }
+.lab-remove {
+    border: none; background: none; padding: 0 0 0 2px; margin: 0;
+    color: inherit; opacity: .55; font: inherit; font-size: 16px;
+    line-height: 1; cursor: pointer;
+}
+.lab-remove:hover { opacity: 1; color: var(--danger); }
+/* Кнопка «+ Добавить лабораторную» — пунктирный пустой талон. */
+.lab-chip.add {
+    border-style: dashed; background: transparent; color: var(--muted);
+    box-shadow: none; font: inherit; font-size: 13px; font-weight: 500;
+}
+.lab-chip.add:hover { color: var(--text); border-color: var(--text); }
+
+/* ===== Своя запись в очереди ===== */
+.badge.mine { background: var(--accent); color: var(--accent-contrast); margin-left: 6px; }
+tr.my-row td { background: var(--chip); }
+tr.my-row td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+/* Карточка «Вы в очереди» — лист с чёрным корешком. */
+.card.my-entry { border-left: 4px solid var(--accent); }
+.card.my-entry .pos { vertical-align: middle; }
+.card.my-entry form { margin-top: 14px; }
+
 /* ===== Таблицы ===== */
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }

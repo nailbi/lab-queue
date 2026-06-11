@@ -16,4 +16,13 @@ class Subject extends Model
     {
         return $this->hasMany(QueueEntry::class)->orderBy('position');
     }
+
+    /**
+     * Лабораторные работы предмета (кнопки на странице записи).
+     * Список ведёт староста.
+     */
+    public function labs(): HasMany
+    {
+        return $this->hasMany(Lab::class)->orderBy('number');
+    }
 }

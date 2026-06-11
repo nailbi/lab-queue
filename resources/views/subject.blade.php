@@ -5,7 +5,7 @@
 @section('content')
     <p class="muted"><a href="{{ route('home') }}">← Все предметы</a></p>
     <h1>{{ $subject->name }}</h1>
-    <p class="sub">Лабораторных работ по предмету: {{ $subject->lab_count }}</p>
+    <p class="sub">Лабораторных работ по предмету: {{ $subject->labs->count() }}</p>
 
     @if ($subject->description)
         {{-- Описание предмета — раздел "статьи" из задания. --}}
@@ -23,24 +23,52 @@
         </div>
     </div>
 
-    <div class="card">
-        <h2 style="margin-top:0">Записаться в очередь</h2>
-        <form method="POST" action="{{ route('subjects.join', $subject) }}">
-            @csrf
-            <label for="student_name">Ваше имя</label>
-            <input type="text" id="student_name" name="student_name" value="{{ old('student_name') }}" required>
+    @if ($myEntry)
+        {{-- Студент уже в очереди: повторная запись закрыта, можно только выйти. --}}
+        <div class="card my-entry">
+            <h2 style="margin-top:0">Вы в очереди</h2>
+            <p>
+                {{ $myEntry->student_name }}, ваша позиция —
+                <span class="pos">{{ $myEntry->position }}</span>.
+                Записаться в очередь можно только один раз.
+            </p>
+            <form method="POST" action="{{ route('subjects.leave', [$subject, $myEntry]) }}"
+                  onsubmit="return confirm('Выйти из очереди? Своё место вы потеряете.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn danger">Выйти из очереди</button>
+            </form>
+        </div>
+    @else
+        <div class="card">
+            <h2 style="margin-top:0">Записаться в очередь</h2>
+            @if ($subject->labs->isEmpty())
+                <p class="muted">Староста ещё не добавил список лабораторных работ — запись пока недоступна.</p>
+            @else
+                <form method="POST" action="{{ route('subjects.join', $subject) }}">
+                    @csrf
+                    <label for="student_name">Ваше имя</label>
+                    <input type="text" id="student_name" name="student_name" value="{{ old('student_name') }}" required>
 
-            <label for="lab_titles">Названия лабораторных работ (каждая с новой строки)</label>
-            <textarea id="lab_titles" name="lab_titles" required>{{ old('lab_titles') }}</textarea>
+                    <label>Какие работы хотите защитить</label>
+                    <div class="lab-picker">
+                        @foreach ($subject->labs as $lab)
+                            <label class="lab-chip">
+                                <input type="checkbox" name="labs[]" value="{{ $lab->id }}"
+                                       @checked(in_array($lab->id, old('labs', [])))>
+                                <span>{{ $lab->title }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="muted lab-hint">Нажмите на кнопки нужных лабораторных — можно выбрать несколько.</p>
 
-            <label for="labs_to_pass">Сколько работ хотите защитить</label>
-            <input type="number" id="labs_to_pass" name="labs_to_pass" min="1" max="100" value="{{ old('labs_to_pass', 1) }}" required>
-
-            <div style="margin-top:16px">
-                <button type="submit" class="btn">Встать в очередь</button>
-            </div>
-        </form>
-    </div>
+                    <div style="margin-top:16px">
+                        <button type="submit" class="btn">Встать в очередь</button>
+                    </div>
+                </form>
+            @endif
+        </div>
+    @endif
 
     <script>
         // Динамический элемент: автообновление списка очереди без перезагрузки страницы.

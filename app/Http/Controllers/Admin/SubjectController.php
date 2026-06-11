@@ -13,20 +13,20 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subjects = Subject::withCount('queueEntries')->orderBy('name')->get();
+        $subjects = Subject::withCount('queueEntries')->with('labs')->orderBy('name')->get();
 
         return view('admin.subjects', compact('subjects'));
     }
 
     /**
-     * Создать предмет: название, описание, количество лаб.
+     * Создать предмет: название и описание.
+     * Список лабораторных добавляется отдельными кнопками.
      */
     public function store(Request $request)
     {
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'lab_count'   => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
         Subject::create($data);
@@ -35,14 +35,13 @@ class SubjectController extends Controller
     }
 
     /**
-     * Изменить предмет (в т.ч. количество лаб).
+     * Изменить предмет.
      */
     public function update(Request $request, Subject $subject)
     {
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'lab_count'   => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
         $subject->update($data);

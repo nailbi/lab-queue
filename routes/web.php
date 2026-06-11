@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\QueueManageController;
+use App\Http\Controllers\Admin\LabController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
     Route::put('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+
+    // Управление кнопками лабораторных работ предмета.
+    Route::post('/subjects/{subject}/labs', [LabController::class, 'store'])->name('labs.store');
+    Route::delete('/subjects/{subject}/labs/{lab}', [LabController::class, 'destroy'])->name('labs.destroy');
 
     // Управление очередью предмета.
     Route::get('/subjects/{subject}/queue', [QueueManageController::class, 'show'])->name('queue.show');

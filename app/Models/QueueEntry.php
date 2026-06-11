@@ -9,7 +9,7 @@ class QueueEntry extends Model
 {
     protected $fillable = [
         'subject_id', 'student_name', 'lab_titles',
-        'labs_to_pass', 'position', 'status',
+        'labs_to_pass', 'position', 'status', 'student_token',
     ];
 
     /**

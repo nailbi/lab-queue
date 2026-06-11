@@ -11,7 +11,7 @@
             <div class="row">
                 <div>
                     <strong>{{ $subject->name }}</strong>
-                    <div class="muted">Лабораторных работ: {{ $subject->lab_count }}</div>
+                    <div class="muted">Лабораторных работ: {{ $subject->labs_count }}</div>
                 </div>
                 <span class="badge">В очереди: {{ $subject->queue_entries_count }}</span>
             </div>
