@@ -27,9 +27,11 @@
                 <span class="brand-text">Очередь на сдачу лаб</span>
             </a>
             <nav>
+                <a href="{{ route('schedule') }}" @class(['nav-active' => request()->routeIs('schedule')])>Расписание</a>
                 <button type="button" id="theme-toggle" class="theme-toggle" title="Сменить тему" aria-label="Сменить тему">🌙</button>
                 @auth
                     <a href="{{ route('admin.subjects.index') }}">Панель старосты</a>
+                    <a href="{{ route('admin.schedule.index') }}">Ред. расписание</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn sm ghost">Выйти</button>

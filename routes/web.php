@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QueueController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\QueueManageController;
 use App\Http\Controllers\Admin\LabController;
+use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,9 @@ use App\Http\Controllers\Admin\LabController;
 */
 
 Route::get('/', [QueueController::class, 'index'])->name('home');
+
+// Расписание семестра (для всех, без авторизации).
+Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule');
 
 Route::get('/subjects/{subject}', [QueueController::class, 'show'])->name('subjects.show');
 
@@ -39,6 +44,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Управление кнопками лабораторных работ предмета.
     Route::post('/subjects/{subject}/labs', [LabController::class, 'store'])->name('labs.store');
     Route::delete('/subjects/{subject}/labs/{lab}', [LabController::class, 'destroy'])->name('labs.destroy');
+
+    // Управление расписанием семестра.
+    Route::get('/schedule', [AdminScheduleController::class, 'index'])->name('schedule.index');
+    Route::post('/schedule', [AdminScheduleController::class, 'store'])->name('schedule.store');
+    Route::put('/schedule/{entry}', [AdminScheduleController::class, 'update'])->name('schedule.update');
+    Route::delete('/schedule/{entry}', [AdminScheduleController::class, 'destroy'])->name('schedule.destroy');
 
     // Управление очередью предмета.
     Route::get('/subjects/{subject}/queue', [QueueManageController::class, 'show'])->name('queue.show');

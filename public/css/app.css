@@ -268,6 +268,45 @@ tr:first-child .pos { background: var(--accent); color: var(--accent-contrast); 
 .inline-form { display: inline; }
 .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
+/* Активная ссылка в шапке (текущая страница). */
+nav a.nav-active { font-weight: 700; border-bottom-color: var(--text); }
+
+/* ===== Расписание — строки пар внутри листа-дня ===== */
+.schedule-day-name {
+    font-family: var(--font-display); font-weight: 700; font-size: 14px;
+    text-transform: uppercase; letter-spacing: .6px;
+}
+.schedule-day .row { margin-bottom: 4px; }
+/* Одна пара: время | предмет/аудитория | штамп типа. */
+.schedule-row {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 10px 0; border-top: 1px solid var(--line);
+}
+.schedule-row:first-of-type { margin-top: 6px; }
+.schedule-time {
+    min-width: 92px; font-weight: 500; font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+.schedule-info { flex: 1; }
+.schedule-subject { font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.schedule-row .badge { align-self: flex-start; flex-shrink: 0; }
+/* В админке у строки справа кнопка удаления. */
+.schedule-admin-row { align-items: center; }
+/* Поля времени в форме добавления — в ряд. */
+.schedule-form-times { display: flex; gap: 12px; }
+.schedule-form-times > div { flex: 1; }
+select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--input-line);
+    border-radius: 2px; font: inherit; background: var(--card); color: var(--text);
+    transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+select:focus { outline: none; border-color: var(--text); box-shadow: 2px 2px 0 var(--shadow); }
+input[type=time] {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--input-line);
+    border-radius: 2px; font: inherit; background: var(--card); color: var(--text);
+}
+input[type=time]:focus { outline: none; border-color: var(--text); box-shadow: 2px 2px 0 var(--shadow); }
+
 /* ===== Страница входа ===== */
 .auth-wrap { max-width: 400px; margin: 60px auto; padding: 0 20px; }
 .auth-card {
