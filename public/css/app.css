@@ -426,3 +426,130 @@ input[type=time]:focus { outline: none; border-color: var(--text); box-shadow: 2
     .otp.otp-merge .otp-success { transform: translateX(-50%); }
     .otp.otp-merge .otp-success svg { animation: none; }
 }
+
+/* ============================================================
+   Расписание — вкладки День / Неделя / Семестр.
+   День и Неделя — таймлайн с линией текущего времени;
+   Семестр — календарь месяца (колонки Пн…Сб).
+   ============================================================ */
+
+/* Переключатель видов — «штампы» в ряд. */
+.sch-toolbar { display: flex; justify-content: center; margin-bottom: 16px; }
+.sch-seg {
+    display: inline-flex; background: var(--card);
+    border: 1px solid var(--line); border-radius: 3px;
+    box-shadow: 2px 2px 0 var(--shadow); overflow: hidden;
+}
+.sch-seg button {
+    font: inherit; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: 8px 20px; border: 0; border-right: 1px solid var(--line);
+    background: transparent; color: var(--text); cursor: pointer;
+}
+.sch-seg button:last-child { border-right: 0; }
+.sch-seg button[aria-selected="true"] { background: var(--accent); color: var(--accent-contrast); }
+.sch-hide { display: none; }
+
+.sch-range { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.sch-range b {
+    font-family: var(--font-display); color: var(--text);
+    text-transform: uppercase; letter-spacing: .4px; font-size: 13px;
+}
+
+/* Прокрутка по горизонтали на узких экранах. */
+.sch-scroll { overflow-x: auto; }
+
+/* ----- Таймлайн (День / Неделя) ----- */
+.sch-cal {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 3px; box-shadow: 3px 3px 0 var(--shadow); overflow: hidden;
+}
+.sch-dh { display: grid; grid-template-columns: 50px repeat(6, 1fr); border-bottom: 1px solid var(--line); }
+.sch-dh.one { grid-template-columns: 50px 1fr; }
+.sch-dh .sch-gx { border-right: 1px solid var(--line); }
+.sch-dh .sch-d { padding: 8px 4px; text-align: center; border-right: 1px solid var(--line); }
+.sch-dh .sch-d:last-child { border-right: 0; }
+.sch-dh .sch-d small {
+    display: block; font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-size: 10px;
+}
+.sch-dh .sch-d .sch-num { font-size: 14px; font-weight: 600; }
+.sch-dh .sch-d.tod .sch-num {
+    display: inline-flex; width: 24px; height: 24px; margin-top: 2px;
+    align-items: center; justify-content: center; border-radius: 50%;
+    background: var(--accent); color: var(--accent-contrast); font-weight: 700;
+}
+.sch-dh .sch-d.tod small { color: var(--text); }
+
+.sch-body { position: relative; display: grid; grid-template-columns: 50px repeat(6, 1fr); }
+.sch-body.one { grid-template-columns: 50px 1fr; }
+.sch-gut { position: relative; }
+.sch-gut .sch-t {
+    position: absolute; right: 6px; font-size: 11px; color: var(--muted);
+    font-variant-numeric: tabular-nums; transform: translateY(-7px);
+}
+/* Часовая сетка — повторяющиеся линии высотой --row. */
+.sch-col {
+    position: relative; border-left: 1px solid var(--line);
+    background-image: repeating-linear-gradient(to bottom,
+        transparent 0, transparent calc(var(--row) - 1px),
+        var(--line) calc(var(--row) - 1px), var(--line) var(--row));
+}
+/* Пара — блок, спозиционированный по времени. */
+.sch-ev {
+    position: absolute; left: 3px; right: 3px; padding: 5px 7px;
+    background: var(--chip); border-left: 3px solid var(--accent);
+    border-radius: 2px; overflow: hidden;
+}
+.sch-ev.lab { background: var(--ok-bg); border-left-color: var(--ok); }
+.sch-ev .sch-et { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sch-ev .sch-es { font-size: 12px; font-weight: 500; line-height: 1.2; margin-top: 1px; }
+.sch-ev .sch-er { font-size: 10px; color: var(--muted); margin-top: 1px; }
+/* Линия текущего времени. */
+.sch-now { position: absolute; left: 0; right: 0; display: flex; align-items: center; pointer-events: none; z-index: 5; }
+.sch-now .sch-nt {
+    width: 50px; text-align: right; padding-right: 5px;
+    font-size: 10px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums;
+}
+.sch-now .sch-nr { flex: 1; height: 2px; background: var(--danger); position: relative; }
+.sch-now .sch-nr::before {
+    content: ""; position: absolute; left: -3px; top: -2px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--danger);
+}
+
+/* ----- Календарь месяца (Семестр) ----- */
+.sch-wkh { display: grid; grid-template-columns: repeat(6, 1fr); margin-bottom: 6px; }
+.sch-wkh span {
+    font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--muted); text-align: center;
+}
+.sch-wkh span.tod { color: var(--text); }
+.sch-mlabel { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0 0 8px; }
+.sch-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 3px; box-shadow: 3px 3px 0 var(--shadow); overflow: hidden;
+}
+.sch-cell { min-height: 100px; padding: 6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.sch-cell:nth-child(6n) { border-right: 0; }
+.sch-cell.out { background: var(--chip); }
+.sch-cell.out .sch-dn { opacity: .45; }
+.sch-dn { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+.sch-dn.todc {
+    display: inline-flex; width: 24px; height: 24px;
+    align-items: center; justify-content: center; border-radius: 50%;
+    background: var(--accent); color: var(--accent-contrast); font-weight: 700;
+}
+.sch-mev {
+    display: block; font-size: 10px; line-height: 1.3; padding: 2px 4px; margin-bottom: 3px;
+    background: var(--chip); border-left: 2px solid var(--accent); border-radius: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sch-mev.lab { background: var(--ok-bg); border-left-color: var(--ok); color: var(--ok); }
+.sch-mev b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.sch-empty { color: var(--muted); font-size: 14px; padding: 16px; text-align: center; }
+
+@media (max-width: 600px) {
+    .sch-cal, .sch-grid { min-width: 560px; }
+    .sch-seg button { padding: 8px 14px; }
+}

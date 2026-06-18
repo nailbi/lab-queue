@@ -45,4 +45,24 @@ class ScheduleEntry extends Model
     {
         return self::WEEK_TYPES[$this->week_type] ?? '';
     }
+
+    /** Время начала пары в минутах от полуночи («09:30» → 570). Для раскладки на таймлайне. */
+    public function startMinutes(): int
+    {
+        return $this->toMinutes($this->time_start);
+    }
+
+    /** Время конца пары в минутах от полуночи. */
+    public function endMinutes(): int
+    {
+        return $this->toMinutes($this->time_end);
+    }
+
+    /** «HH:MM» → минуты от полуночи. */
+    private function toMinutes(?string $time): int
+    {
+        [$h, $m] = array_pad(explode(':', (string) $time), 2, '0');
+
+        return ((int) $h) * 60 + (int) $m;
+    }
 }
