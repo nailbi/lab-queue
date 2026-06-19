@@ -10,6 +10,8 @@
         $bodyHeight    = ($endHour - $startHour) * $pxPerHour;
         $todayEntries  = $byDay->get($todayIso);
         $shortDays     = ['', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+        // id предмета очереди по названию пары (или null, если очереди нет).
+        $subjectId     = fn ($name) => $subjectIds[mb_strtolower(trim((string) $name))] ?? null;
     @endphp
 
     <div id="schedule-app">
@@ -45,14 +47,15 @@
                                 @php
                                     $top = round(($e->startMinutes() - $rangeStartMin) / 60 * $pxPerHour);
                                     $hgt = max(round(($e->endMinutes() - $e->startMinutes()) / 60 * $pxPerHour), 24);
+                                    $sid = $subjectId($e->subject);
                                 @endphp
-                                <div class="sch-ev @if($e->type === 'lab') lab @endif" style="top:{{ $top }}px; height:{{ $hgt }}px">
+                                <a @if($sid) href="{{ route('subjects.show', $sid) }}" @endif class="sch-ev @if($sid) link @endif @if($e->type === 'lab') lab @endif" style="top:{{ $top }}px; height:{{ $hgt }}px">
                                     <div class="sch-et">{{ $e->time_start }}–{{ $e->time_end }}</div>
                                     <div class="sch-es">{{ $e->subject }}</div>
                                     @if($e->room || $e->teacher)
                                         <div class="sch-er">{{ collect([$e->room ? 'ауд. '.$e->room : null, $e->teacher])->filter()->implode(' · ') }}</div>
                                     @endif
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                         <div class="sch-now"><span class="sch-nt">--:--</span><span class="sch-nr"></span></div>
@@ -91,12 +94,13 @@
                                     @php
                                         $top = round(($e->startMinutes() - $rangeStartMin) / 60 * $pxPerHour);
                                         $hgt = max(round(($e->endMinutes() - $e->startMinutes()) / 60 * $pxPerHour), 24);
+                                        $sid = $subjectId($e->subject);
                                     @endphp
-                                    <div class="sch-ev @if($e->type === 'lab') lab @endif" style="top:{{ $top }}px; height:{{ $hgt }}px">
+                                    <a @if($sid) href="{{ route('subjects.show', $sid) }}" @endif class="sch-ev @if($sid) link @endif @if($e->type === 'lab') lab @endif" style="top:{{ $top }}px; height:{{ $hgt }}px">
                                         <div class="sch-et">{{ $e->time_start }}–{{ $e->time_end }}</div>
                                         <div class="sch-es">{{ $e->subject }}</div>
                                         @if($e->room)<div class="sch-er">ауд. {{ $e->room }}</div>@endif
-                                    </div>
+                                    </a>
                                 @endforeach
                             </div>
                         @endforeach
@@ -130,7 +134,8 @@
                                     <div class="sch-dn">{{ sprintf('%02d', $date->day) }}</div>
                                 @endif
                                 @foreach($dayEntries ?? [] as $e)
-                                    <span class="sch-mev @if($e->type === 'lab') lab @endif"><b>{{ $e->time_start }}</b> {{ $e->subject }}</span>
+                                    @php $sid = $subjectId($e->subject); @endphp
+                                    <a @if($sid) href="{{ route('subjects.show', $sid) }}" @endif class="sch-mev @if($sid) link @endif @if($e->type === 'lab') lab @endif"><b>{{ $e->time_start }}</b> {{ $e->subject }}</a>
                                 @endforeach
                             </div>
                         @endforeach

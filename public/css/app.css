@@ -456,8 +456,8 @@ input[type=time]:focus { outline: none; border-color: var(--text); box-shadow: 2
     text-transform: uppercase; letter-spacing: .4px; font-size: 13px;
 }
 
-/* Прокрутка по горизонтали на узких экранах. */
-.sch-scroll { overflow-x: auto; }
+/* Прокрутка по горизонтали на узких экранах и по вертикали — до вечерних часов (20:00). */
+.sch-scroll { overflow: auto; max-height: 70vh; }
 
 /* ----- Таймлайн (День / Неделя) ----- */
 .sch-cal {
@@ -502,6 +502,10 @@ input[type=time]:focus { outline: none; border-color: var(--text); box-shadow: 2
     border-radius: 2px; overflow: hidden;
 }
 .sch-ev.lab { background: var(--ok-bg); border-left-color: var(--ok); }
+/* Пара-ссылка: ведёт в очередь предмета. */
+a.sch-ev { display: block; color: inherit; text-decoration: none; }
+.sch-ev.link { cursor: pointer; transition: box-shadow .12s ease; }
+.sch-ev.link:hover { box-shadow: inset 0 0 0 1.5px var(--accent); }
 .sch-ev .sch-et { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .sch-ev .sch-es { font-size: 12px; font-weight: 500; line-height: 1.2; margin-top: 1px; }
 .sch-ev .sch-er { font-size: 10px; color: var(--muted); margin-top: 1px; }
@@ -547,6 +551,10 @@ input[type=time]:focus { outline: none; border-color: var(--text); box-shadow: 2
 }
 .sch-mev.lab { background: var(--ok-bg); border-left-color: var(--ok); color: var(--ok); }
 .sch-mev b { font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Пара-ссылка в календаре месяца. */
+a.sch-mev { color: inherit; text-decoration: none; }
+.sch-mev.link { cursor: pointer; }
+.sch-mev.link:hover { text-decoration: underline; }
 .sch-empty { color: var(--muted); font-size: 14px; padding: 16px; text-align: center; }
 
 @media (max-width: 600px) {

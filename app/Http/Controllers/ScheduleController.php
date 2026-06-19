@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ScheduleEntry;
+use App\Models\Subject;
 use Illuminate\Support\Carbon;
 
 class ScheduleController extends Controller
@@ -41,6 +42,12 @@ class ScheduleController extends Controller
 
         $byDay = $entries->groupBy('day_of_week');
 
+        // Сопоставление пары с предметом очереди по названию (без учёта регистра
+        // и лишних пробелов): нормализованное имя → id предмета.
+        $subjectIds = Subject::all()
+            ->mapWithKeys(fn (Subject $s) => [self::normalizeName($s->name) => $s->id])
+            ->all();
+
         $now      = now();
         $todayIso = (int) $now->isoWeekday();
 
@@ -53,6 +60,9 @@ class ScheduleController extends Controller
         if ($endHour - $startHour < 2) {
             $endHour = $startHour + 2;
         }
+        // Таймлайн всегда тянется до 22:00 — можно пролистать вечерние часы,
+        // даже если поздних пар нет.
+        $endHour = max($endHour, 22);
 
         // --- Текущая неделя: понедельник…суббота с датами. ---
         $weekStart = $now->copy()->startOfWeek();
@@ -91,7 +101,14 @@ class ScheduleController extends Controller
             'dayLabel'   => $this->dayLabel($now),
             'weekLabel'  => $this->weekLabel($weekStart),
             'monthLabel' => self::MONTHS_NOM[(int) $now->month],
+            'subjectIds' => $subjectIds,
         ]);
+    }
+
+    /** Нормализация названия предмета для сопоставления пары с очередью. */
+    private static function normalizeName(?string $name): string
+    {
+        return mb_strtolower(trim((string) $name));
     }
 
     /** Подпись дня: «четверг, 18 июня». */
