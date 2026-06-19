@@ -17,6 +17,7 @@
     </script>
 </head>
 <body>
+    @include('partials.preloader', ['variant' => 'globe'])
     <div class="auth-wrap">
         <div class="auth-logo">
             <a href="{{ route('home') }}" style="text-decoration:none">

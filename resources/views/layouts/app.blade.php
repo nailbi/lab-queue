@@ -18,6 +18,7 @@
     </script>
 </head>
 <body>
+    @include('partials.preloader', ['variant' => 'globe'])
     <header>
         <div class="wrap">
             <a href="{{ route('home') }}" class="brand">
