@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Учётная запись старосты (админа).
-        // ВХОД: starosta@example.com / password — поменяйте пароль!
+        // ВХОД на /login — по 4-значному коду ADMIN_CODE из .env (по умолчанию 0000).
+        // Эта запись лишь хранит учётку старосты; email/пароль для входа не используются.
         User::updateOrCreate(
             ['email' => 'starosta@example.com'],
             ['name' => 'Староста', 'password' => Hash::make('password')]

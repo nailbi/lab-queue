@@ -17,27 +17,25 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_staroste_can_authenticate_with_correct_code(): void
     {
-        $user = User::factory()->create();
+        // Вход в этом приложении — по 4-значному коду старосты,
+        // а не по email/паролю. Должна существовать учётная запись.
+        config(['auth.admin_code' => '4321']);
+        User::factory()->create();
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
+        $response = $this->post('/login', ['code' => '4321']);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('admin.subjects.index', absolute: false));
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    public function test_staroste_can_not_authenticate_with_wrong_code(): void
     {
-        $user = User::factory()->create();
+        config(['auth.admin_code' => '4321']);
+        User::factory()->create();
 
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
-        ]);
+        $this->post('/login', ['code' => '0000']);
 
         $this->assertGuest();
     }

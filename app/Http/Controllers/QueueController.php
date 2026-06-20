@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Subject;
 use App\Models\QueueEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -51,6 +52,13 @@ class QueueController extends Controller
      */
     public function store(Request $request, Subject $subject)
     {
+        // Запись «заморожена» старостой — встать в очередь нельзя.
+        if (! $subject->registration_open) {
+            return redirect()
+                ->route('subjects.show', $subject)
+                ->withErrors(['student_name' => 'Запись в очередь по этому предмету закрыта старостой.']);
+        }
+
         $token = self::studentToken($request);
 
         // Повторная запись с этого браузера запрещена, пока есть своя запись в очереди.
@@ -74,17 +82,23 @@ class QueueController extends Controller
         // Названия выбранных лаб — из списка, который ведёт староста.
         $labs = $subject->labs()->whereIn('id', $data['labs'])->get();
 
-        // Позиция = текущая длина очереди + 1 (встаёт в конец).
-        $nextPosition = (int) $subject->queueEntries()->max('position') + 1;
+        // Выдача позиции — под блокировкой строки предмета, чтобы при
+        // одновременной записи двух студентов они не получили одинаковую
+        // позицию (гонка на max(position) + 1). Вся операция атомарна.
+        DB::transaction(function () use ($subject, $data, $labs, $token) {
+            DB::table('subjects')->where('id', $subject->id)->lockForUpdate()->first();
 
-        $subject->queueEntries()->create([
-            'student_name'  => $data['student_name'],
-            'lab_titles'    => $labs->pluck('title')->implode("\n"),
-            'labs_to_pass'  => $labs->count(),
-            'position'      => $nextPosition,
-            'status'        => 'waiting',
-            'student_token' => $token,
-        ]);
+            $nextPosition = (int) $subject->queueEntries()->max('position') + 1;
+
+            $subject->queueEntries()->create([
+                'student_name'  => $data['student_name'],
+                'lab_titles'    => $labs->pluck('title')->implode("\n"),
+                'labs_to_pass'  => $labs->count(),
+                'position'      => $nextPosition,
+                'status'        => 'waiting',
+                'student_token' => $token,
+            ]);
+        });
 
         return redirect()
             ->route('subjects.show', $subject)

@@ -12,9 +12,9 @@
     --input-line:#b9b7b2;
     --text:#111111;
     --muted:#8a8a86;
-    --accent:#111111;        /* акцент — чёрный */
+    --accent:#111111;        /* акцент — чёрный «оттиск печати» */
     --accent-contrast:#ffffff;
-    --ok:#15803d;  --ok-bg:#e4f3e6;        /* зелёный «на сдаче» / «сдал» */
+    --ok:#15803d;  --ok-bg:#e4f3e6;        /* зелёный «на сдаче» / «сдал» / «ваш ход» */
     --danger:#dc2626; --danger-bg:#fdecec; /* красный «не явился» */
     --chip:#f5f5f3; --chip-text:#6b6b67;   /* серый «ожидает» */
 
@@ -595,4 +595,126 @@ a.sch-mev { color: inherit; text-decoration: none; }
 @media (max-width: 600px) {
     .sch-cal, .sch-grid { min-width: 560px; }
     .sch-seg button { padding: 8px 14px; }
+}
+
+/* ============================================================
+   ПОЛИРОВКА: пустые состояния, бейджи-глифы, «ваш ход»,
+   мобильные карточки очереди, входные анимации, микро-движения.
+   ============================================================ */
+
+/* ===== Пустые состояния — line-art штамп + текст ===== */
+.empty-state {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 12px; padding: 18px 10px;
+}
+.empty-state .empty-ill {
+    width: 56px; height: 56px; color: var(--muted); opacity: .7;
+}
+.empty-state p { margin: 0; }
+
+/* ===== Глифы в статус-бейджах (различимость без опоры на цвет) ===== */
+.badge.wait::before,
+.badge.present::before,
+.badge.ok::before,
+.badge.absent::before {
+    content: ""; display: inline-block; margin-right: 5px;
+    font-weight: 700; transform: translateY(-0.5px);
+}
+.badge.wait::before    { content: "•"; }   /* ожидает */
+.badge.present::before { content: "•"; }   /* на сдаче */
+.badge.ok::before      { content: "✓"; }   /* сдал */
+.badge.absent::before  { content: "✕"; }   /* не явился */
+
+/* ===== Очередь: вход новых строк, FLIP-сдвиг, «ваш ход» ===== */
+.queue-table tbody tr {
+    transition: transform 360ms var(--ease-out), opacity 220ms ease, background-color .2s ease;
+    will-change: transform;
+}
+/* Новая строка появляется (класс ставит JS на странице предмета). */
+.queue-table tbody tr.row-enter { opacity: 0; transform: translateY(8px); }
+/* Уходящая строка тает (JS). */
+.queue-table tbody tr.row-leave { opacity: 0; transform: translateX(14px); }
+
+/* «Ваш ход» — первый в очереди и это вы. Зелёный «иду» из палитры статусов
+   (тот же смысл, что «на сдаче»), номер-штамп с мягким привлечением внимания. */
+.queue-table tbody tr.is-turn td { background: var(--ok-bg); }
+.queue-table tbody tr.is-turn td:first-child { box-shadow: inset 3px 0 0 var(--ok); }
+.queue-table tbody tr.is-turn .pos {
+    background: var(--ok); color: #fff; border-color: var(--ok);
+    animation: turn-pulse 1.8s var(--ease-out) infinite;
+}
+@keyframes turn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 50%, transparent); }
+    50%      { box-shadow: 0 0 0 6px color-mix(in srgb, var(--ok) 0%, transparent); }
+}
+
+/* ===== Мобильные карточки очереди (<=600px таблица -> карточки) ===== */
+@media (max-width: 600px) {
+    .queue-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .queue-table, .queue-table tbody, .queue-table tr, .queue-table td { display: block; width: 100%; }
+    .queue-table tr {
+        background: var(--card); border: 1px solid var(--line); border-radius: 3px;
+        box-shadow: 2px 2px 0 var(--shadow);
+        padding: 12px 14px; margin-bottom: 12px;
+    }
+    .queue-table td {
+        border: none; padding: 4px 0;
+        display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    }
+    /* Подпись колонки слева от значения. */
+    .queue-table td::before {
+        content: attr(data-label); flex: none;
+        color: var(--muted); font-size: 11px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+    /* Пустую ячейку действий и ячейки без подписи не показываем. */
+    .queue-table td[data-label=""]:empty { display: none; }
+    .queue-table td[data-label=""] { justify-content: flex-end; }
+    .queue-table td[data-label=""]::before { display: none; }
+    /* Список лабораторных выравниваем по правому краю. */
+    .queue-table td[data-label="Лабораторные"] { text-align: right; }
+    .queue-table td[data-label="Лабораторные"] > div { display: block; }
+    /* «Ваш» корешок — на всю карточку, а не на угол. */
+    .queue-table tbody tr.my-row td { background: transparent; }
+    .queue-table tbody tr.my-row { border-left: 4px solid var(--accent); }
+    .queue-table tbody tr.my-row td:first-child { box-shadow: none; }
+    .queue-table tbody tr.is-turn { border-left-color: var(--ok); }
+    .queue-table tbody tr.is-turn td { background: transparent; }
+    .queue-table tbody tr.is-turn td:first-child { box-shadow: none; }
+}
+
+/* ===== Кнопка в состоянии отправки — мини-спиннер ===== */
+.btn.is-loading { position: relative; color: transparent !important; pointer-events: none; }
+.btn.is-loading::after {
+    content: ""; position: absolute; top: 50%; left: 50%;
+    width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px;
+    border: 2px solid currentColor; border-top-color: transparent;
+    border-radius: 50%; color: var(--accent-contrast);
+    animation: btn-spin .6s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+/* ===== Микро-«штамп» при выборе лабораторной ===== */
+.lab-chip:has(input:checked) { animation: chip-stamp 180ms var(--ease-out); }
+@keyframes chip-stamp {
+    0%   { transform: scale(.94); }
+    60%  { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* ===== На тач-устройствах не даём hover-сдвигам срабатывать по тапу ===== */
+@media (hover: none) {
+    .card-link:hover { transform: none; box-shadow: 3px 3px 0 var(--shadow); }
+    .nav-btn:hover { transform: none; box-shadow: 2px 2px 0 var(--shadow); border-color: var(--line); }
+    .btn:hover { opacity: 1; }
+}
+
+/* ===== Меньше движения: гасим новые анимации движения ===== */
+@media (prefers-reduced-motion: reduce) {
+    .queue-table tbody tr { transition: opacity 200ms ease, background-color .2s ease; }
+    .queue-table tbody tr.row-enter { transform: none; }
+    .queue-table tbody tr.row-leave { transform: none; }
+    .queue-table tbody tr.is-turn .pos { animation: none; }
+    .lab-chip:has(input:checked) { animation: none; }
+    .btn.is-loading::after { animation: btn-spin 1.2s linear infinite; } /* спиннер оставляем — это индикатор */
 }

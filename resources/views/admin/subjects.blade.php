@@ -59,6 +59,27 @@
                 </div>
             </div>
 
+            {{-- Состояние записи: открыта / заморожена --}}
+            <div style="margin-top:12px; border-top:1px solid var(--line); padding-top:12px">
+                <label style="margin-top:0">
+                    Запись в очередь:
+                    @if ($subject->registration_open)
+                        <span style="color:#15803d; font-weight:600">открыта</span>
+                    @else
+                        <span style="color:#b91c1c; font-weight:600">закрыта (заморожена)</span>
+                    @endif
+                </label>
+                <form method="POST" action="{{ route('admin.subjects.registration', $subject) }}" class="inline-form">
+                    @csrf
+                    @method('PUT')
+                    @if ($subject->registration_open)
+                        <button type="submit" class="btn sm danger">Заморозить запись</button>
+                    @else
+                        <button type="submit" class="btn sm">Открыть запись</button>
+                    @endif
+                </form>
+            </div>
+
             {{-- Отдельные действия: перейти к очереди / удалить предмет --}}
             <div class="actions" style="margin-top:12px; border-top:1px solid var(--line); padding-top:12px">
                 <a href="{{ route('admin.queue.show', $subject) }}" class="btn sm ghost">

@@ -116,6 +116,18 @@
                 updateIcon();
             });
         })();
+
+        // Состояние отправки для любой формы: главная кнопка показывает спиннер.
+        // Слушаем в фазе всплытия, чтобы inline-onsubmit (confirm) отработал раньше нас.
+        document.addEventListener('submit', function (e) {
+            if (e.defaultPrevented) return; // отменено confirm'ом — ничего не делаем
+            var form = e.target;
+            var btn = form.querySelector('button[type="submit"], button:not([type]):not([formnovalidate])');
+            if (!btn || btn.classList.contains('is-loading')) return;
+            btn.classList.add('is-loading'); // pointer-events:none не даст нажать повторно
+            // Страховка: вернуть кнопку, если переход не случился (напр. ошибка валидации сервера).
+            setTimeout(function () { btn.classList.remove('is-loading'); }, 8000);
+        });
     </script>
 </body>
 </html>

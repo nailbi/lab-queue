@@ -16,6 +16,13 @@ use App\Http\Controllers\Admin\ScheduleController as AdminScheduleController;
 
 Route::get('/', [QueueController::class, 'index'])->name('home');
 
+// «Личный кабинет» после входа = панель старосты.
+// Маршрут именован dashboard, потому что на него ссылаются стандартные
+// контроллеры авторизации (после входа / подтверждения почты и т.п.).
+Route::get('/dashboard', fn () => redirect()->route('admin.subjects.index'))
+    ->middleware('auth')
+    ->name('dashboard');
+
 // Расписание семестра (для всех, без авторизации).
 Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule');
 
@@ -40,6 +47,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
     Route::put('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+
+    // Заморозить / открыть запись в очередь по предмету.
+    Route::put('/subjects/{subject}/registration', [SubjectController::class, 'toggleRegistration'])->name('subjects.registration');
 
     // Управление кнопками лабораторных работ предмета.
     Route::post('/subjects/{subject}/labs', [LabController::class, 'store'])->name('labs.store');

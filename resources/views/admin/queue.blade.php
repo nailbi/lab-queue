@@ -8,7 +8,15 @@
     <p class="sub">Регулируйте порядок, отмечайте явку и удаляйте записи.</p>
 
     @if ($subject->queueEntries->isEmpty())
-        <div class="card">В очереди пока никого нет.</div>
+        <div class="card">
+            <div class="empty-state">
+                <svg class="empty-ill" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="14" y="8" width="36" height="48" rx="2"/>
+                    <path d="M22 22h20M22 32h20M22 42h12"/>
+                </svg>
+                <p class="muted">В очереди пока никого нет.</p>
+            </div>
+        </div>
     @else
         <div class="card">
             <div class="table-scroll">
@@ -51,13 +59,15 @@
                             </td>
                             <td>{{ $entry->labs_to_pass }}</td>
                             <td>
-                                <span class="badge
-                                    @if($entry->status==='passed') ok
-                                    @elseif($entry->status==='present') present
-                                    @elseif($entry->status==='absent') absent
-                                    @endif">
-                                    {{ $entry->statusLabel() }}
-                                </span>
+                                @php
+                                    $statusClass = match ($entry->status) {
+                                        'passed'  => 'ok',
+                                        'present' => 'present',
+                                        'absent'  => 'absent',
+                                        default   => 'wait',
+                                    };
+                                @endphp
+                                <span class="badge {{ $statusClass }}">{{ $entry->statusLabel() }}</span>
                             </td>
                             <td>
                                 <div class="actions">

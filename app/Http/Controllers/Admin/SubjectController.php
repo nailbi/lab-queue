@@ -50,6 +50,20 @@ class SubjectController extends Controller
     }
 
     /**
+     * Заморозить / открыть запись в очередь по предмету.
+     * При закрытой записи новые студенты встать не могут,
+     * но уже записавшиеся остаются в очереди.
+     */
+    public function toggleRegistration(Subject $subject)
+    {
+        $subject->update(['registration_open' => ! $subject->registration_open]);
+
+        return back()->with('success', $subject->registration_open
+            ? 'Запись в очередь открыта.'
+            : 'Запись в очередь закрыта.');
+    }
+
+    /**
      * Удалить предмет (вместе с его очередью — каскадно).
      */
     public function destroy(Subject $subject)
