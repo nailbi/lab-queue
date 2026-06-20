@@ -28,17 +28,46 @@
                 <span class="brand-text">Очередь на сдачу лаб</span>
             </a>
             <nav>
-                <a href="{{ route('schedule') }}" @class(['nav-active' => request()->routeIs('schedule')])>Расписание</a>
+                <a href="{{ route('schedule') }}"
+                   @class(['nav-btn', 'is-active' => request()->routeIs('schedule')])>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                    <span>Расписание</span>
+                </a>
                 <button type="button" id="theme-toggle" class="theme-toggle" title="Сменить тему" aria-label="Сменить тему">🌙</button>
                 @auth
-                    <a href="{{ route('admin.subjects.index') }}">Панель старосты</a>
-                    <a href="{{ route('admin.schedule.index') }}">Ред. расписание</a>
+                    <a href="{{ route('admin.subjects.index') }}"
+                       @class(['nav-btn', 'is-active' => request()->routeIs('admin.subjects.*')])>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="8" y="3" width="8" height="4" rx="1"/>
+                            <path d="M9 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3"/>
+                        </svg>
+                        <span>Панель старосты</span>
+                    </a>
+                    <a href="{{ route('admin.schedule.index') }}"
+                       @class(['nav-btn', 'is-active' => request()->routeIs('admin.schedule.*')])>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18"/>
+                        </svg>
+                        <span>Ред. расписание</span>
+                    </a>
                     <form method="POST" action="{{ route('logout') }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn sm ghost">Выйти</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}">Вход для старосты</a>
+                    <a href="{{ route('login') }}"
+                       @class(['nav-btn', 'is-active' => request()->routeIs('login')])>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <path d="M10 17l5-5-5-5"/>
+                            <path d="M15 12H3"/>
+                        </svg>
+                        <span>Вход для старосты</span>
+                    </a>
                 @endauth
             </nav>
         </div>
